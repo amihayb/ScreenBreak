@@ -14,10 +14,7 @@
         <item name="android:textColor">@color/jumbo</item>
 
         <item name="colorButtonNormal">@color/colorPrimaryDark</item>
+        <item name="android:colorButtonNormal">@color/colorPrimaryDark</item>
     </style>
 
-    <style name="SwipeLayout">
-        <item name="android:paddingBottom">1px</item>
-        <item name="android:background">#e5e5e5</item>
-    </style>
 </resources>
