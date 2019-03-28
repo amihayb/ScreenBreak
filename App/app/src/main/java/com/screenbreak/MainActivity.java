@@ -1,19 +1,31 @@
 package com.screenbreak;
 
+import android.annotation.TargetApi;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.WindowManager;
 
 import com.screenbreak.app.AppFragment;
 import com.screenbreak.common.FragmentAnimationCycle;
 
+import java.util.Arrays;
+import java.util.OptionalInt;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import timber.log.Timber;
 
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int REQUEST_PERMISSIONS = 123;
 
     private AppFragment m_appFragment;
 
@@ -31,11 +43,22 @@ public class MainActivity extends AppCompatActivity {
 
         Thread.currentThread().setUncaughtExceptionHandler(this::onUncaughtException);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         m_fragmentAnimationCycle = FragmentAnimationCycle.getInstance();
 
         m_appFragment = AppFragment.newInstance();
 
         showFragment(m_appFragment);
+    }
+
+    @Override
+    protected void onStart() {
+        Timber.d("in onStart");
+
+        getPermission();
+
+        super.onStart();
     }
 
     @Override
@@ -51,6 +74,13 @@ public class MainActivity extends AppCompatActivity {
 
         super.onResume();
 
+    }
+
+    @Override
+    protected void onStop() {
+        Timber.d("in onStop");
+
+        super.onStop();
     }
 
     @Override
@@ -74,6 +104,38 @@ public class MainActivity extends AppCompatActivity {
 //        } else {
         super.onBackPressed();
 //        }
+    }
+
+    public String[] readPermissions() {
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_PERMISSIONS);
+            if (info != null) {
+                return info.requestedPermissions;
+            }
+        } catch (Exception e) {
+            Timber.e(e, "Failed on try to read permissions");
+        }
+        return null;
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    private void getPermission() {
+        String[] permissions = readPermissions();
+
+        ActivityCompat.requestPermissions(MainActivity.this,
+                permissions,
+                REQUEST_PERMISSIONS);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        OptionalInt first = Arrays.stream(grantResults).filter(value -> value != PackageManager.PERMISSION_GRANTED).findFirst();
+        if (first.isPresent()) {
+            // Not all permissions granted
+            getPermission();
+        }
     }
 
     @UiThread
