@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 28
@@ -68,4 +69,10 @@ dependencies {
     //RxLint
     implementation 'nl.littlerobots.rxlint:rxlint:1.6'
     //endregion RX
+
+    //region Firebase
+    implementation 'com.google.firebase:firebase-core:16.0.8'
+    implementation 'com.google.firebase:firebase-database:16.1.0'
+    implementation 'com.google.firebase:firebase-messaging:17.5.0'
+    //endregion Firebase
 }

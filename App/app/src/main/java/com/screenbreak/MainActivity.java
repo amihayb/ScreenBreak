@@ -1,6 +1,7 @@
 package com.screenbreak;
 
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -39,7 +40,21 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
+        Intent intent = getIntent();
+        if (intent != null) {
+            String value = intent.getStringExtra("key"); //if it's a string you stored.
+            Timber.d("Key = %s", value);
+        }
+
         setContentView(R.layout.activity_main);
+
+//        findViewById(R.id.fragment_container)
+//                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
+//                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+//                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+//                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
         Thread.currentThread().setUncaughtExceptionHandler(this::onUncaughtException);
 
@@ -71,9 +86,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         Timber.d("in onResume");
-
         super.onResume();
-
     }
 
     @Override
@@ -128,7 +141,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions, @NonNull final int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode,
+                                           @NonNull final String[] permissions, @NonNull final int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         OptionalInt first = Arrays.stream(grantResults).filter(value -> value != PackageManager.PERMISSION_GRANTED).findFirst();
@@ -174,5 +188,11 @@ public class MainActivity extends AppCompatActivity {
 
         finishAffinity();
     }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        Timber.d("in onNewIntent");
+    }
+
 
 }
